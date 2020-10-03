@@ -1,0 +1,38 @@
+{
+  "name": "mongoose-sub-references-integrity-checker",
+  "version": "1.0.0",
+  "description": "Package useful for mantaining the sub-references integrity and structure of mongoose models. It provides cascade deleting, and sub-ref support at any nested level. Also include support for soft deleting.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "mongoose": "^5.10.7",
+    "mongoose-old-values": "^1.0.0",
+    "mongoose-soft-deleting": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha ./tests/base.js --exit; mocha ./tests/soft-delete.js --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QuantumGlitch/mongoose-sub-references-integrity-checker.git"
+  },
+  "keywords": [
+    "mongoose",
+    "sub",
+    "references",
+    "subdocument",
+    "integrity",
+    "checker",
+    "relationship",
+    "consistent"
+  ],
+  "author": "QuantumGlitch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/QuantumGlitch/mongoose-sub-references-integrity-checker/issues"
+  },
+  "homepage": "https://github.com/QuantumGlitch/mongoose-sub-references-integrity-checker#readme"
+}
