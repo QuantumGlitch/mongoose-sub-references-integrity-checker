@@ -469,6 +469,7 @@ const MessageSchema = new mongoose.Schema({
         type: String,
     },
 });
+MessageSchema.plugin(softDeletePlugin);
 const MessageModel = consistentModel('Message', MessageSchema);
 
 ...
@@ -538,6 +539,7 @@ const MessageSchema = new mongoose.Schema({
         type: String,
     },
 });
+MessageSchema.plugin(softDeletePlugin);
 const MessageModel = consistentModel('Message', MessageSchema);
 
 ...
