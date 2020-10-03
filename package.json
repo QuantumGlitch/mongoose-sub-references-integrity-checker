@@ -22,12 +22,17 @@
   "keywords": [
     "mongoose",
     "sub",
-    "references",
+    "document",
     "subdocument",
+    "reference",
+    "references",
     "integrity",
+    "consistent",
+    "consistency",
     "checker",
     "relationship",
-    "consistent"
+    "relation",
+    "relations"
   ],
   "author": "QuantumGlitch",
   "license": "MIT",
