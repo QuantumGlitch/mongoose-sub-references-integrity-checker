@@ -8,7 +8,7 @@ Package useful for mantaining the sub-references integrity and structure of mong
 
 **2) Using sub references is considered in most of the cases an anti-pattern that you should avoid (usually you can re-organize your data to avoid it).**
 
-If you are interested in the integrity of normal references too, (watch this out)[https://github.com/QuantumGlitch/mongoose-references-integrity-checker].
+If you are interested in the integrity of normal references too, [watch this out][https://github.com/QuantumGlitch/mongoose-references-integrity-checker].
 
 # Dependencies
 
@@ -574,7 +574,7 @@ You can try the tests using the following command ( before you need to change th
 
 # See also
 
-If you are using references you could be interested in (sub-references-populate)[https://github.com/QuantumGlitch/mongoose-sub-references-populate]
+If you are using references you could be interested in [sub-references-populate][https://github.com/QuantumGlitch/mongoose-sub-references-populate]
 
 # Support
 
