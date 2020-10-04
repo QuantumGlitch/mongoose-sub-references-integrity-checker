@@ -144,7 +144,7 @@ async function onDeleteBlock(
         pathSubRef,
         modelRef,
         pathRef,
-        constrainedDocId: constrainedDoc._id,
+        whoIsBlocking: constrainedDoc._id,
       });
   }
 }
@@ -333,7 +333,7 @@ function plugin(modelName, schema) {
                     ${e.options.modelSubRef} --> ${e.options.pathSubRef}
                     from which depends 
                     ${e.options.modelRef} --> ${e.options.pathRef}. 
-                    (Constrained by document: ${e.options.constrainedDocId})`
+                    (Constrained by document: ${e.options.whoIsBlocking})`
                 );
               }
 
