@@ -32,7 +32,8 @@
     "checker",
     "relationship",
     "relation",
-    "relations"
+    "relations",
+    "nested"
   ],
   "author": "QuantumGlitch",
   "license": "MIT",
