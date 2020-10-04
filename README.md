@@ -322,6 +322,35 @@ const MessageSchema = new mongoose.Schema({
 });
 ```
 
+## Bound To - SchemaType option
+
+If you would like to store the reference of root document in which stands the sub reference, it will speed up checks for integrity:
+
+```js
+// Same PersonSchema of last example
+const PersonModel = consistentModel('Person', PersonSchema);
+const MessageSchema = new mongoose.Schema({
+  person: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Person',
+  },
+  contact: {
+    type: mongoose.Schema.Types.ObjectId,
+    subRef: 'Person.contacts',
+    // Path in local schema to reach the root reference
+    boundTo: 'person',
+  },
+  content: {
+    type: String,
+  },
+});
+const MessageModel = consistentModel('Message', MessageSchema);
+```
+
+In this case, **person** field must be always associated to the correct _id of the root document or it will ends up in unpredictable behaviours.
+
+If the field's value of **person** is *null* or *undefined* then in this case, the behavior would be the same as if the person field did not exist.
+
 ## Nesting - Parent of the relationship
 
 You can provide any path you like to the subRef prop on SchemaType, the important thing is that is a direct path to a sub document array or array. This means that you can't provide a path to an array nested in another array.
