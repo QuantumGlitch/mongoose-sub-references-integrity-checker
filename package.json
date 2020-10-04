@@ -7,11 +7,12 @@
     "test": "tests"
   },
   "dependencies": {
-    "mongoose": "^5.10.7",
     "mongoose-old-values": "^1.0.0",
     "mongoose-soft-deleting": "^1.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mongoose": "^5.10.7"
+  },
   "scripts": {
     "test": "mocha ./tests/base.js --exit; mocha ./tests/soft-delete.js --exit"
   },
