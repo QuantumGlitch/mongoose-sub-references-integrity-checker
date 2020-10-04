@@ -14,13 +14,15 @@ function getReferencedValues(pathSubRef, referencedDocument) {
   return referencedDocument.get(pathSubRef).map((d) => d._id || d);
 }
 
-function getFindQueryObjectFor(modelRef, pathRef, modelSubRef, pathSubRef, referencedValues) {
-  return {
-    [pathRef]: { $in: referencedValues },
-  };
+function getFindQueryObjectFor(modelRef, pathRef, referencedValues, boundRefValue) {
+  return boundRefValue
+    ? { _id: boundRefValue }
+    : {
+        [pathRef]: { $in: referencedValues },
+      };
 }
 
-function getUpdateQueryObjectFor(modelRef, pathRef, modelSubRef, pathSubRef, referencedValues) {
+function getUpdateQueryObjectFor(modelRef, pathRef, referencedValues) {
   const path = pathRef instanceof Array ? pathRef : pathRef.split('.');
   const model = mongoose.model(modelRef);
   const fieldRefSchemaType = model.schema.path(pathRef);
@@ -86,14 +88,15 @@ async function onDeleteSetNull(
   modelSubRef,
   pathSubRef,
   referencedValues,
+  boundRefValue,
   { softDelete = false, _deleted } = {}
 ) {
   if (!softDelete)
     await mongoose
       .model(modelRef)
       .updateMany(
-        getFindQueryObjectFor(modelRef, pathRef, modelSubRef, pathSubRef, referencedValues),
-        ...getUpdateQueryObjectFor(modelRef, pathRef, modelSubRef, pathSubRef, referencedValues)
+        getFindQueryObjectFor(modelRef, pathRef, referencedValues, boundRefValue),
+        ...getUpdateQueryObjectFor(modelRef, pathRef, referencedValues)
       )
       .exec();
 }
@@ -104,15 +107,10 @@ async function onDeleteCascade(
   modelSubRef,
   pathSubRef,
   referencedValues,
+  boundRefValue,
   { softDelete = false, _deleted } = {}
 ) {
-  const queryObject = getFindQueryObjectFor(
-    modelRef,
-    pathRef,
-    modelSubRef,
-    pathSubRef,
-    referencedValues
-  );
+  const queryObject = getFindQueryObjectFor(modelRef, pathRef, referencedValues, boundRefValue);
 
   const documents = await mongoose.model(modelRef).find(queryObject).exec();
 
@@ -129,12 +127,13 @@ async function onDeleteBlock(
   modelSubRef,
   pathSubRef,
   referencedValues,
+  boundRefValue,
   { softDelete = false, _deleted } = {}
 ) {
   if (!softDelete || _deleted) {
     const constrainedDoc = await mongoose
       .model(modelRef)
-      .findOne(getFindQueryObjectFor(modelRef, pathRef, modelSubRef, pathSubRef, referencedValues))
+      .findOne(getFindQueryObjectFor(modelRef, pathRef, referencedValues, boundRefValue))
       .exec();
 
     if (constrainedDoc)
@@ -156,6 +155,7 @@ async function onDeleteConditions(
   modelSubRef,
   pathSubRef,
   referencedValues,
+  boundRefValue,
   softDeleteOptions
 ) {
   if (schemaType.required) {
@@ -168,6 +168,7 @@ async function onDeleteConditions(
         modelSubRef,
         pathSubRef,
         referencedValues,
+        boundRefValue,
         softDeleteOptions
       );
     // Block delete if references exist
@@ -178,6 +179,7 @@ async function onDeleteConditions(
         modelSubRef,
         pathSubRef,
         referencedValues,
+        boundRefValue,
         softDeleteOptions
       );
   }
@@ -189,6 +191,7 @@ async function onDeleteConditions(
       modelSubRef,
       pathSubRef,
       referencedValues,
+      boundRefValue,
       softDeleteOptions
     );
 }
@@ -228,6 +231,12 @@ function plugin(modelName, schema) {
     for (let { modelName: modelRef, path, schemaType } of refs[modelName]) {
       // Remove the model name from the ref
       const pathSubRef = schemaType.options.subRef.substr(modelName.length + 1);
+
+      // Is field boundTo the root document ref ?
+      const boundRefValue = schemaType.options.boundTo
+        ? document.get(schemaType.options.boundTo)
+        : null;
+
       await onDeleteConditions(
         schemaType,
         modelRef,
@@ -235,6 +244,7 @@ function plugin(modelName, schema) {
         modelName,
         pathSubRef,
         getReferencedValues(pathSubRef, document),
+        boundRefValue,
         softDeleteOptions
       );
     }
@@ -285,7 +295,12 @@ function plugin(modelName, schema) {
 
           if (deletedValues.length > 0) {
             try {
-              const remover = async () =>
+              const remover = async () => {
+                // Is field boundTo the root document ref ?
+                const boundRefValue = schemaType.options.boundTo
+                  ? this.get(schemaType.options.boundTo)
+                  : null;
+
                 await onDeleteConditions(
                   schemaType,
                   modelName,
@@ -293,8 +308,10 @@ function plugin(modelName, schema) {
                   subRefModel,
                   pathSubRef,
                   // Referenced values
-                  deletedValues.map((d) => d._id || d)
+                  deletedValues.map((d) => d._id || d),
+                  boundRefValue
                 );
+              };
 
               // This is the only case in which, this can be used directly (because it can only throw an error to stop the validation)
               if (schemaType.required && !schemaType.cascade) await remover();
