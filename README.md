@@ -6,7 +6,7 @@ Package useful for mantaining the sub-references integrity and structure of mong
 
 1. This is based on middleware hook **remove** and **deleteOne** and on **validators**. If you would like to mantain the integrity anyway, you should always use this middleware even on a bunch of data (obviously at the cost of performance) by looping over the collection and deleting singularly every document.
 
-**2) Using sub references is considered in most of the cases an anti-pattern that you should avoid (usually you can re-organize your data to avoid it).**
+2. **Using sub references is considered in most of the cases an anti-pattern that you should avoid (usually you can re-organize your data to avoid it).**
 
 If you are interested in the integrity of normal references too, [watch this out](https://github.com/QuantumGlitch/mongoose-references-integrity-checker).
 
@@ -298,30 +298,6 @@ assert(!child.contact);
 
 If the sub reference is not required then deleting the root document of the parent of the relationship, or deleting the parent sub document, will unset the sub ref on all his children.
 
-## Nesting - Child of the relationship
-
-In the last examples we've seen the most simple case, in which the ref on the child is in the root of the document. Any way you can nest it in the way you prefer and the usage will be the same.
-
-```js
-const MessageSchema = new mongoose.Schema({
-  pathToRef: {
-    ...
-        {
-            anyProp: [
-                ...
-                    propertyIfYouWant: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        subRef: 'Person.contacts',
-                        ... (subRefOptions)
-                    }
-                ...
-            ]
-        }
-    ...
-  },
-});
-```
-
 ## Bound To - SchemaType option
 
 If you would like to store the reference of root document in which stands the sub reference, it will speed up checks for integrity:
@@ -347,9 +323,33 @@ const MessageSchema = new mongoose.Schema({
 const MessageModel = consistentModel('Message', MessageSchema);
 ```
 
-In this case, **person** field must be always associated to the correct _id of the root document or it will ends up in unpredictable behaviours.
+In this case, **person** field must be always associated to the correct \_id of the root document or it will ends up in unpredictable behaviours.
 
-If the field's value of **person** is *null* or *undefined* then in this case, the behavior would be the same as if the person field did not exist.
+If the field's value of **person** is _null_ or _undefined_ then in this case, the behavior would be the same as if the person field did not exist.
+
+## Nesting - Child of the relationship
+
+In the last examples we've seen the most simple case, in which the ref on the child is in the root of the document. Any way you can nest it in the way you prefer and the usage will be the same.
+
+```js
+const MessageSchema = new mongoose.Schema({
+  pathToRef: {
+    ...
+        {
+            anyProp: [
+                ...
+                    propertyIfYouWant: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        subRef: 'Person.contacts',
+                        ... (subRefOptions)
+                    }
+                ...
+            ]
+        }
+    ...
+  },
+});
+```
 
 ## Nesting - Parent of the relationship
 
