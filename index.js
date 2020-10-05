@@ -1,4 +1,4 @@
-const mongoose = require('../mongoose') || require('mongoose');
+const mongoose = require.main.require('mongoose');
 
 const oldValuesPlugin = require('mongoose-old-values');
 const SubRefConstraintError = require('./error');
