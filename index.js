@@ -161,7 +161,7 @@ async function onDeleteConditions(
 ) {
   if (schemaType.required) {
     // This reference is required
-    if (schemaType.cascade || schemaType.options.cascade)
+    if (schemaType.cascade || (schemaType.options && schemaType.options.cascade))
       // Delete references on cascade
       await onDeleteCascade(
         modelRef,
@@ -315,7 +315,10 @@ function plugin(modelName, schema) {
               };
 
               // This is the only case in which, this can be used directly (because it can only throw an error to stop the validation)
-              if (schemaType.required && !(schemaType.cascade || schemaType.options.cascade))
+              if (
+                schemaType.required &&
+                !(schemaType.cascade || (schemaType.options && schemaType.options.cascade))
+              )
                 await remover();
               // Otherwise we will need to run updates, after validation is completed
               // We can't run updates now, because a successive validator could stop the saving and at the point we need to rollback
